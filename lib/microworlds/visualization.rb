@@ -6,6 +6,7 @@ module Microworlds
     import java.awt.Graphics
     import java.awt.BasicStroke
     import java.awt.Dimension
+    import java.awt.Polygon
 
     import java.awt.image.BufferedImage
     import javax.swing.JPanel
@@ -57,11 +58,35 @@ module Microworlds
       bg.setColor(Color.white)
       bg.fillRect(0,0, img.getWidth, img.getHeight)
 
-      sim.world.each do |patch|
+
+      sim.world.each_patch do |patch|
         color = Color.send(patch.color)
 
         fill_cell(bg, patch.xpos, patch.ypos, color)
       end
+
+      sim.world.each_creature do |creature|
+        color = Color.send(creature[:color])
+
+        bg.setColor(color)
+        bg.fillOval(creature[:xpos] * SCALE, creature[:ypos] * SCALE, 
+                                      SCALE, SCALE)
+       
+        bg.fillOval(creature[:xpos] * SCALE + SCALE*0.50, 
+                    creature[:ypos] * SCALE + SCALE*0.25,
+                    SCALE * 0.75, SCALE * 0.75)
+
+        creature[:xpos] = (creature[:xpos] + 1) % 
+                          Simulator::DIMENSIONS
+
+        creature[:ypos] = (creature[:ypos] + rand(-1..1)) % 
+                          Simulator::DIMENSIONS
+
+        sim.world.update_patch(creature[:xpos], creature[:ypos]) { |patch| 
+          patch.set_patch_color :white 
+        }
+      end
+
 
       g.drawImage(img, 0, 0, nil)
       bg.dispose

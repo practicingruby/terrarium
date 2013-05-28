@@ -18,10 +18,10 @@ module Microworlds
 
     def update_patches(&block)
       @lock.synchronize do
-        @world.each { |patch| patch.instance_eval(&block) }
-      end
+        @world.each_patch { |patch| patch.instance_eval(&block) }
 
-      @listeners.each { |e| e.update(self) }
+        @listeners.each { |e| e.update(self) }
+      end
 
       nil
     end

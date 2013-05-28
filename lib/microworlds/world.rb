@@ -1,20 +1,40 @@
+require_relative "buffered_hash"
+require_relative "patch"
+
 module Microworlds
   class World
     def initialize(size)
       @size = size
-      @data = (@size**2).times.map do |i| 
+      @patches = (@size**2).times.map do |i| 
                 BufferedHash.new(:xpos  => i % @size,
                                  :ypos  => i / @size,
                                  :color => :black)
               end
+
+      @creatures = 10.times.map { BufferedHash.new(:xpos  => rand(0...@size),
+                                                  :ypos  => rand(0...@size),
+                                                  :color => :red) }
     end
 
-    attr_reader :data
+    attr_reader :patches
 
-    def each
-      @data.each { |e| yield(Patch.new(e, neighbors_for(e))) } 
+    def update_patch(x, y)
+      patch = @patches[index_for(x, y)]
 
-      @data.each { |e| e.commit }
+      yield Patch.new(patch, neighbors_for(patch))
+      patch.commit
+    end
+
+    def each_patch
+      @patches.each { |e| yield(Patch.new(e, neighbors_for(e))) } 
+
+      @patches.each { |e| e.commit }
+    end
+
+    def each_creature
+      @creatures.each { |e| yield(e) }
+
+      @creatures.each { |e| e.commit }
     end
 
     def neighbors_for(e)
@@ -26,7 +46,7 @@ module Microworlds
                  [1,1],[-1,-1],[-1,1],[1,-1]]
       
       offsets.map do |dx, dy|
-        Patch.new(@data[index_for(xpos + dx, ypos + dy)].head, [])
+        Patch.new(@patches[index_for(xpos + dx, ypos + dy)].head, [])
       end
     end
 

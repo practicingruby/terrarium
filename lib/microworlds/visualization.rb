@@ -22,7 +22,7 @@ module Microworlds
       end
     end
 
-    SCALE = 10
+    SCALE = 12
 
     def initialize
       @panel = Panel.new
@@ -68,21 +68,23 @@ module Microworlds
       sim.world.each_creature do |creature|
         color = Color.send(creature[:color])
 
-        bg.setColor(color)
-        bg.fillOval(creature[:xpos] * SCALE, creature[:ypos] * SCALE, 
-                                      SCALE, SCALE)
+        x = creature[:xpos]
+        y = creature[:ypos]
+
+        bg.setColor(color.darker)
+        bg.fillOval(x * SCALE, y * SCALE, SCALE, SCALE)
        
-        bg.fillOval(creature[:xpos] * SCALE + SCALE*0.50, 
-                    creature[:ypos] * SCALE + SCALE*0.25,
-                    SCALE * 0.75, SCALE * 0.75)
 
-        creature[:xpos] = (creature[:xpos] + 1) % 
-                          Simulator::DIMENSIONS
+        angle = creature[:heading] * Math::PI / 180
 
-        creature[:ypos] = (creature[:ypos] + rand(-1..1)) % 
-                          Simulator::DIMENSIONS
+        hx = (x * SCALE) + (SCALE * 0.5 * Math.cos(angle))
+        hy = (y * SCALE) + (SCALE * 0.5 * Math.sin(angle))
 
-        sim.world.update_patch(creature[:xpos], creature[:ypos]) { |patch| 
+        bg.setColor(color)
+        bg.fillOval(hx + SCALE*0.25, hy + SCALE*0.25, SCALE*0.5, SCALE*0.5)
+
+
+        sim.world.update_patch(x, y) { |patch| 
           patch.set_patch_color :white 
         }
       end

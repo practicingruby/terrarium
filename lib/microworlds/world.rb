@@ -11,12 +11,13 @@ module Microworlds
                                  :color => :black)
               end
 
-      @creatures = 10.times.map { BufferedHash.new(:xpos  => rand(0...@size),
-                                                  :ypos  => rand(0...@size),
-                                                  :color => :red) }
+      @creatures = 10.times.map { BufferedHash.new(:xpos     => rand(0...@size),
+                                                   :ypos     => rand(0...@size),
+                                                   :heading  => 0,
+                                                   :color    => :red) }
     end
 
-    attr_reader :patches
+    attr_reader :patches, :creatures
 
     def update_patch(x, y)
       patch = @patches[index_for(x, y)]

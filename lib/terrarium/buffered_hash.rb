@@ -1,4 +1,4 @@
-module Microworlds
+module Terrarium
   class BufferedHash
     def initialize(head={})
       @head   = head

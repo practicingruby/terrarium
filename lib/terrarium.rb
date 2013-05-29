@@ -1,0 +1,5 @@
+require_relative "terrarium/buffered_hash"
+require_relative "terrarium/patch"
+require_relative "terrarium/world"
+require_relative "terrarium/simulator"
+require_relative "terrarium/visualization"

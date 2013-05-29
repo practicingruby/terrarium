@@ -1,4 +1,4 @@
-module Microworlds
+module Terrarium
   class Patch
     def initialize(data, neighbors)
       @data       = data

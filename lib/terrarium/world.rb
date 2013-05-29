@@ -1,7 +1,7 @@
 require_relative "buffered_hash"
 require_relative "patch"
 
-module Microworlds
+module Terrarium
   class World
     def initialize(size)
       @size = size

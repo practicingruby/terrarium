@@ -1,6 +1,6 @@
 require "thread"
 
-module Microworlds
+module Terrarium
   class Simulator
     DIMENSIONS = 64
 

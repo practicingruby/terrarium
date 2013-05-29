@@ -1,8 +1,8 @@
 require "pry"
-require_relative "../lib/microworlds"
+require_relative "../lib/terrarium"
 
-sim     = Microworlds::Simulator.new
-display = Microworlds::Visualization.new
+sim     = Terrarium::Simulator.new
+display = Terrarium::Visualization.new
 
 sim.notify(display)
 

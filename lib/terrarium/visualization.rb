@@ -1,4 +1,4 @@
-module Microworlds
+module Terrarium
   class Visualization
     include Java
 

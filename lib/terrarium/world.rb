@@ -1,5 +1,6 @@
 require_relative "buffered_hash"
 require_relative "patch"
+require_relative "creature"
 
 module Terrarium
   class World
@@ -10,14 +11,19 @@ module Terrarium
                                  :ypos  => i / @size,
                                  :color => :black)
               end
-
-      @creatures = 10.times.map { BufferedHash.new(:xpos     => rand(0...@size),
-                                                   :ypos     => rand(0...@size),
-                                                   :heading  => 0,
-                                                   :color    => :red) }
+      
+      @creatures = []
     end
 
     attr_reader :patches, :creatures
+
+
+    def add_creature(x, y)
+      @creatures << BufferedHash.new(:xpos    => x,
+                                     :ypos    => y,
+                                     :heading => 0,
+                                     :color   => :red) 
+    end
 
     def update_patch(x, y)
       patch = @patches[index_for(x, y)]
@@ -33,7 +39,7 @@ module Terrarium
     end
 
     def each_creature
-      @creatures.each { |e| yield(e) }
+      @creatures.each { |e| yield Creature.new(e, @size) }
 
       @creatures.each { |e| e.commit }
     end

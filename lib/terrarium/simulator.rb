@@ -2,7 +2,7 @@ require "thread"
 
 module Terrarium
   class Simulator
-    DIMENSIONS = 64
+    DIMENSIONS = 75
 
     def initialize
       @world     = World.new(DIMENSIONS)
@@ -16,7 +16,37 @@ module Terrarium
 
     attr_reader :world
 
-    def update_patches(&block)
+    def create_creatures(amount)
+      amount.times do 
+        @world.add_creature(DIMENSIONS/2.0, DIMENSIONS/2.0)
+      end
+
+      @listeners.each { |e| e.update(self) }
+      
+      nil
+    end
+
+    def creatures(&block)
+      @lock.synchronize do
+        @world.each_creature { |creature| creature.instance_eval(&block) }
+
+        @listeners.each { |e| e.update(self) }
+      end
+
+      nil
+    end
+
+    def creatures!(interval=0.025, &block)
+      Thread.new do
+        loop do
+          sleep interval
+
+          creatures(&block)
+        end
+      end
+    end
+
+    def patches(&block)
       @lock.synchronize do
         @world.each_patch { |patch| patch.instance_eval(&block) }
 
@@ -26,14 +56,14 @@ module Terrarium
       nil
     end
 
-    def up!(interval=0.025, &block)
-      loop do
-        sleep interval
+    def patches!(interval=0.025, &block)
+      Thread.new do
+        loop do
+          sleep interval
 
-        update_patches(&block)
+          patches(&block)
+        end
       end
     end
-
-    alias_method :up, :update_patches
   end
 end

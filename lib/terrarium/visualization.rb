@@ -22,7 +22,7 @@ module Terrarium
       end
     end
 
-    SCALE = 12
+    SCALE = 10
 
     def initialize
       @panel = Panel.new
@@ -66,27 +66,22 @@ module Terrarium
       end
 
       sim.world.each_creature do |creature|
-        color = Color.send(creature[:color])
+        color = Color.send(creature.color)
 
-        x = creature[:xpos]
-        y = creature[:ypos]
+        x = creature.xpos
+        y = creature.ypos
 
         bg.setColor(color.darker)
         bg.fillOval(x * SCALE, y * SCALE, SCALE, SCALE)
        
 
-        angle = creature[:heading] * Math::PI / 180
+        angle = creature.heading * Math::PI / 180
 
         hx = (x * SCALE) + (SCALE * 0.5 * Math.cos(angle))
         hy = (y * SCALE) + (SCALE * 0.5 * Math.sin(angle))
 
         bg.setColor(color)
         bg.fillOval(hx + SCALE*0.25, hy + SCALE*0.25, SCALE*0.5, SCALE*0.5)
-
-
-        sim.world.update_patch(x, y) { |patch| 
-          patch.set_patch_color :white 
-        }
       end
 
 

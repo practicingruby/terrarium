@@ -15,7 +15,7 @@ module Terrarium
       @creatures = []
     end
 
-    attr_reader :patches, :creatures
+    attr_reader :patches, :creatures, :size
 
 
     def add_creature(x, y)
@@ -23,6 +23,10 @@ module Terrarium
                                      :ypos    => y,
                                      :heading => 0,
                                      :color   => :red) 
+    end
+
+    def kill_creature(creature)
+      @creatures.delete(creature)
     end
 
     def update_patch(x, y)
@@ -39,7 +43,7 @@ module Terrarium
     end
 
     def each_creature
-      @creatures.each { |e| yield Creature.new(e, @size) }
+      @creatures.dup.each { |e| yield Creature.new(e, self) } # this shallow copy is intentional!
 
       @creatures.each { |e| e.commit }
     end

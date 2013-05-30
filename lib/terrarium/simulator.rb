@@ -17,12 +17,14 @@ module Terrarium
     attr_reader :world
 
     def create_creatures(amount)
-      amount.times do 
-        @world.add_creature(DIMENSIONS/2.0, DIMENSIONS/2.0)
-      end
+      @lock.synchronize do
+        amount.times do 
+          @world.add_creature(DIMENSIONS/2.0, DIMENSIONS/2.0)
+        end
 
-      @listeners.each { |e| e.update(self) }
-      
+        @listeners.each { |e| e.update(self) }
+      end
+        
       nil
     end
 

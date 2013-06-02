@@ -1,22 +1,14 @@
-require "pry"
-require_relative "../lib/terrarium"
+require_relative "../lib/terrarium/scenario"
 
-sim     = Terrarium::Simulator.new
-display = Terrarium::Visualization.new
+Terrarium::Scenario.define do
+  patches { set_color [:black, :black, :white].sample }
 
-sim.notify(display)
-
-sim.patches { set_patch_color [:black, :black, :white].sample }
-
-Thread.new do
-  sim.patches! do
+  patches! do
     case neighbors.count { |e| e.color == :white }
     when 0..1, 4..8
-      set_patch_color :black unless color == :black
+      set_color :black unless color == :black
     when 3
-      set_patch_color :white unless color == :white
+      set_color :white unless color == :white
     end
   end
 end
-
-binding.pry

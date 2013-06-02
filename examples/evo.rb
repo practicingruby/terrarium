@@ -1,28 +1,26 @@
-require "pry"
-require_relative "../lib/terrarium"
+require_relative "../lib/terrarium/scenario"
 
-sim     = Terrarium::Simulator.new
-display = Terrarium::Visualization.new
+Terrarium::Scenario.define do
+  create_creatures 100
 
-sim.notify(display)
+  creatures do 
+    set_color [:magenta, :cyan, :blue, :green, :yellow, :red].sample
+    lt rand(0..359)
+    fd rand(5..15)
+  end
 
-sim.create_creatures(100)
+  creatures! do 
+    rt rand(1...40)
+    lt rand(1..40)
+    fd 0.1 
+  end
 
-sim.creatures do 
-  set_color [:magenta, :cyan, :blue, :green, :yellow, :red, :orange].sample
-  lt rand(0..359)
-  fd rand(5..15)
+  creatures! do
+    case rand(1..25)
+    when 1
+      destroy
+    when 2
+      create_clone
+    end
+  end
 end
-
-wiggle = sim.creatures! { rt(rand(1...40)); lt(rand(1..40)); fd(0.1) }
-
-evolve = sim.creatures!(0.01) do
-           case rand(1..100)
-           when 1
-             destroy
-           when 2
-             create_clone
-           end
-         end
-
-#sim.pry

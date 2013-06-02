@@ -22,7 +22,7 @@ module Terrarium
       end
     end
 
-    SCALE = 10
+    SCALE = 8
 
     def initialize
       @panel = Panel.new
@@ -66,6 +66,8 @@ module Terrarium
       end
 
       sim.world.each_creature do |creature|
+        next if creature.data.nil? ## FIXME: THIS IS AN EVIL HACK MASKING A CONCURRENCY BUG
+
         color = Color.send(creature.color)
 
         x = creature.xpos

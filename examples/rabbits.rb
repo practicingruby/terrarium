@@ -1,47 +1,50 @@
-require "pry"
-require_relative "../lib/terrarium"
+require_relative "../lib/terrarium/scenario"
 
-sim     = Terrarium::Simulator.new
-display = Terrarium::Visualization.new
+Terrarium::Scenario.define do
+  # initial cabbage density
+  patches { set_color(:green) if rand(1..10) < 5 }
 
-sim.notify(display)
+  # cabbage regrowth rate
+  patches! { set_color(:green) if rand(1..50) == 1 }
 
+  # initial creature population
+  create_creatures(200)
 
-sim.patches { set_patch_color(:green) if rand(1..10) < 5 }
+  # initial creature state
+  creatures do 
+    lt rand(0..359)
+    fd rand(5..25)
 
-grass = sim.patches! { set_patch_color(:green) if rand(1..50) == 1 }
+    data[:energy] = 8
 
-sim.create_creatures(200)
+    set_color :magenta
+  end
 
-sim.creatures do 
-  lt rand(0..359)
-  fd rand(5..25)
+  # movement
+  creatures! { rt(rand(1...40)); lt(rand(1..40)); fd(1) }
 
-  data[:energy] = 8
+  # hunger
+  creatures! { data[:energy] -= 1 }
 
-  set_color :magenta
-end
+  # death
+  creatures! { destroy if data[:energy] < 1 }
 
-wiggle = sim.creatures! { rt(rand(1...40)); lt(rand(1..40)); fd(1) }
+  # cloning
+  creatures! do 
+    if data[:energy] > 10
+      data[:energy] *= 0.25
 
-hunger = sim.creatures!(0.05) { data[:energy] -= 1 }
-death  = sim.creatures!       { destroy if data[:energy] < 1 }
+      create_clone
+    end
+  end
 
-breed  = sim.creatures! do 
-  if data[:energy] > 10
-    data[:energy] *= 0.25
-
-    create_clone
+  # eating
+  creatures! do 
+    update_patch do |patch| 
+      if patch.color == :green
+        patch.set_color :black 
+        data[:energy] += 5
+      end
+    end
   end
 end
-
-eat    = sim.creatures! do 
-           sim.world.update_patch(xpos.round, ypos.round) do |e| 
-             if e.color == :green
-               e.set_patch_color :black 
-               data[:energy] += 5
-             end
-           end
-         end
-
-sim.pry

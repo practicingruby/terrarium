@@ -1,5 +1,7 @@
 require "thread"
 
+require_relative "world"
+
 module Terrarium
   class Simulator
     DIMENSIONS = 75
@@ -45,6 +47,16 @@ module Terrarium
 
           creatures(&block)
         end
+      end
+    end
+
+    def random_patch(&block)
+      patch(rand(0...@world.size), rand(0...@world.size), &block)
+    end
+
+    def patch(x, y, &block)
+      @lock.synchronize do
+        @world.update_patch(x,y) { |patch| patch.instance_eval(&block) }
       end
     end
 

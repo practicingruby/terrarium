@@ -1,66 +1,76 @@
+require_relative "helpers"
+
 module Terrarium
   class Creature
+    include Helpers
+
     def initialize(data, world)
       @data        = data
       @world       = world
     end
 
-    attr_reader :data
+    attr_reader :data, :world
 
-    def heading
-      @data[:heading]
+    def color
+      data[:color]
+    end
+
+    def set_color(value)
+      data[:color] = value
     end
 
     def xpos
-      @data[:xpos]
+      data[:xpos]
     end
 
     def ypos
-      @data[:ypos]
-    end
-
-    def color
-      @data[:color]
+      data[:ypos]
     end
 
     def heading
-      @data[:heading]
+      data[:heading]
+    end
+
+    def nearby_creatures(distance=1)
+      world.creatures
+        .select { |e| distance_to(e[:xpos], e[:ypos]) < distance }
+        .map { |e| self.class.new(e, world) }
+    end
+
+    def distance_to(x, y)
+      Math.hypot(x - xpos, y - ypos)
     end
 
     def destroy
-      @world.kill_creature(@data)
+      world.kill_creature(@data)
     end
 
-    def patch_here
-      @world.update_patch(xpos.round, ypos.round) { |patch| yield(patch) }
+    def update_patch
+      world.update_patch(data[:xpos].round, data[:ypos].round) { |patch| yield(patch) }
     end
 
-    def create_clone
-      copied_creature = Marshal.load(Marshal.dump(@data))
+    def hatch
+      copied_creature = Marshal.load(Marshal.dump(data))
 
-      @world.creatures << copied_creature
+      world.creatures << copied_creature
     end
 
     def fd(amount)
-      angle = heading * Math::PI / 180
+      angle = data[:heading] * Math::PI / 180
 
-      hx = (@data[:xpos] + (amount * Math.cos(angle))) % @world.size
-      hy = (@data[:ypos] + (amount * Math.sin(angle))) % @world.size
+      hx = (data[:xpos] + (amount * Math.cos(angle))) % @world.size
+      hy = (data[:ypos] + (amount * Math.sin(angle))) % @world.size
 
-      @data[:xpos] = hx
-      @data[:ypos] = hy
+      data[:xpos] = hx
+      data[:ypos] = hy
     end
 
     def rt(degrees)
-      @data[:heading] = (@data[:heading] + degrees) % 360
+      data[:heading] = (data[:heading] + degrees) % 360
     end
 
     def lt(degrees)
-      @data[:heading] = (@data[:heading] - degrees) % 360
-    end
-
-    def set_color(color)
-      @data[:color] = color
+      data[:heading] = (data[:heading] - degrees) % 360
     end
   end
 end

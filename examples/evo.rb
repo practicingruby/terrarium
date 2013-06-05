@@ -20,7 +20,7 @@ Terrarium::Scenario.define do
     when 1
       destroy
     when 2
-      create_clone
+      hatch
     end
   end
 end

@@ -40,6 +40,15 @@ module Terrarium
       nil
     end
 
+    def monitor(label)
+      Thread.new do
+        loop do
+          sleep 1
+          puts "#{label}: #{yield world}"
+        end
+      end
+    end
+
     def creatures!(interval=0.025, &block)
       Thread.new do
         loop do

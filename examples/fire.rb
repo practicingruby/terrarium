@@ -1,4 +1,3 @@
-require "pry"
 require_relative "../lib/terrarium/scenario"
 
 Terrarium::Scenario.define do

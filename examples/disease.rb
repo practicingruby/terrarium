@@ -1,43 +1,62 @@
 require_relative "../lib/terrarium/scenario"
 
 Terrarium::Scenario.define do
-  create_creatures 200
+  healthy_color = :cyan
+  sick_color    = :yellow
 
+  initial_population = 200
+  crowd_range        = 5..15
+  sick_time          = 5
+  infection_density  = 0.02
+  movement_speed     = 0.5
+  
+  create_creatures(initial_population)
+  
+  # rule 1: arrange a group of healthy creatures into a crowd
   creatures do 
     lt rand(0..359)
-    fd rand(5..15)
+    fd rand(crowd_range)
 
     data[:sick_time] = 0
+    set_color healthy_color
+  end
 
-    with_probability(0.02) do
-      set_color :yellow 
+  # rule 2: infect some creatures
+  creatures do
+    with_probability(infection_density) do
+      set_color sick_color
       
-      data[:sick_time] = 10
+      data[:sick_time] = sick_time
     end
   end
 
+  # rule 3: allow the creatures to move about randomly
   creatures! do
     lt rand(1..40)
     rt rand(1..40)
 
-    fd 0.2
+    fd movement_speed
   end
 
+  # rule 4: spread disease on contact
   creatures! do
-    next unless color == :red
+    next unless color == healthy_color
 
-    if nearby_creatures.any? { |e| e.color == :yellow}
-      set_color :yellow
+    if nearby_creatures.any? { |e| e.color == sick_color }
+      set_color sick_color
       
-      data[:sick_time] = 10
+      data[:sick_time] = sick_time
     end
   end
 
+  # rule 5: recover or die based on probability 
   creatures!(1) do
-    data[:sick_time] -= 1 if data[:sick_time] > 0
+    next unless color == sick_color
 
-    if data[:sick_time].zero? && color != :red
-      rand(1..2) == 1 ? set_color(:red) : destroy
+    if data[:sick_time] > 0
+      data[:sick_time] -= 1 
+    else
+      coinflip ? set_color(healthy_color) : destroy
     end
   end
 end

@@ -32,12 +32,12 @@ module Terrarium
     def update_patch(x, y)
       patch = @patches[index_for(x, y)]
 
-      yield Patch.new(patch, neighbors_for(patch))
+      yield Patch.new(patch, neighbors_for(patch), self)
       patch.commit
     end
 
     def each_patch
-      @patches.each { |e| yield(Patch.new(e, neighbors_for(e))) } 
+      @patches.each { |e| yield(Patch.new(e, neighbors_for(e), self)) } 
 
       @patches.each { |e| e.commit }
     end
@@ -57,7 +57,7 @@ module Terrarium
                  [1,1],[-1,-1],[-1,1],[1,-1]]
       
       offsets.map do |dx, dy|
-        Patch.new(@patches[index_for(xpos + dx, ypos + dy)].head, [])
+        Patch.new(@patches[index_for(xpos + dx, ypos + dy)].head, [], self)
       end
     end
 

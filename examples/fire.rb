@@ -2,7 +2,7 @@ require_relative "../lib/terrarium/scenario"
 
 Terrarium::Scenario.define do
   patches do
-    with_probability(0.5) { set_color :green }
+    with_probability(0.4) { set_color :green }
   end
 
   patches! do

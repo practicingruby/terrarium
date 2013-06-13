@@ -4,9 +4,10 @@ module Terrarium
   class Patch
     include Helpers
 
-    def initialize(data, neighbors)
+    def initialize(data, neighbors, world)
       @data       = data
       @neighbors  = neighbors
+      @world      = world
     end
 
     attr_reader :data, :neighbors
@@ -25,6 +26,10 @@ module Terrarium
 
     def set_color(color)
       data[:color] = color
+    end
+
+    def hatch
+      @world.add_creature(xpos, ypos)
     end
   end
 end

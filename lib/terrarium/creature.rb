@@ -37,6 +37,13 @@ module Terrarium
         .map { |e| self.class.new(e, world) }
     end
 
+    def wiggle(movement_speed=0.1)
+      lt rand(1..40)
+      rt rand(1..40)
+
+      fd movement_speed
+    end
+
     def distance_to(x, y)
       Math.hypot(x - xpos, y - ypos)
     end
